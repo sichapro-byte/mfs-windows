@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Windows 95 Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.sh/@google/genai@0.7.0",
+          "@tailwindcss/browser": "https://esm.sh/@tailwindcss/browser@^4.1.3"
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div class="desktop" id="desktop">
+      <!-- Desktop Icons -->
+      <div class="icon" data-app="myComputer">
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/mycomputer.png"
+          alt="My Computer"
+          style="width: 70px; height: 50px"
+        />
+        <span>My MFStop</span>
+      </div>
+      <div class="icon" data-app="chrome">
+        <img src="https://storage.googleapis.com/gemini-95-icons/chrome-icon-2.png" alt="Chrome" />
+        <span>Chrome</span>
+      </div>
+      <div class="icon" data-app="notepad">
+        <img src="https://storage.googleapis.com/gemini-95-icons/GemNotes.png" alt="Notepad" />
+        <span>MFSNotes</span>
+      </div>
+      <div class="icon" data-app="paint">
+        <img src="https://storage.googleapis.com/gemini-95-icons/gempaint.png" alt="Paint" />
+        <span>MFSPaint</span>
+      </div>
+      <div class="icon" data-app="doom">
+        <img
+          src="https://64.media.tumblr.com/1d89dfa76381e5c14210a2149c83790d/7a15f84c681c1cf9-c1/s540x810/86985984be99d5591e0cbc0dea6f05ffa3136dac.png"
+          alt="Doom II"
+        />
+        <span>Doom II</span>
+      </div>
+      <div class="icon" data-app="gemini">
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/GeminiChatRetro.png"
+          alt="MFS App"
+        />
+        <span>MFS App</span>
+      </div>
+      <div class="icon" data-app="instagram">
+        <img
+          src="https://win98icons.alexmeub.com/icons/png/camera-2.png"
+          alt="InstaMFS"
+          style="width: 48px; height: 48px"
+        />
+        <span>InstaMFS</span>
+      </div>
+      <div class="icon" data-app="subwaysurfer">
+        <img
+          src="https://win98icons.alexmeub.com/icons/png/joystick-0.png"
+          alt="MFSSurfer"
+          style="width: 48px; height: 48px"
+        />
+        <span>MFSSurfer</span>
+      </div>
+      <div class="icon" data-app="mediaPlayer">
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/ytmediaplayer.png"
+          alt="Media Player"
+          style="width: 48px; height: 48px"
+        />
+        <span>MFSPlayer</span>
+      </div>
+      <div class="icon" data-app="mp3Player">
+        <img
+          src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-5.png"
+          alt="MP3 Player"
+          style="width: 48px; height: 48px"
+        />
+        <span>CD Player</span>
+      </div>
+
+
+      <!-- Windows -->
+      <div class="window resizable" id="myComputer">
+        <div class="window-titlebar">
+          <span class="window-title">My MFStop</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content" style="background-color: white">
+          <div id="c-drive-icon" class="window-icon">
+            <img src="https://storage.googleapis.com/gemini-95-icons/cdrive.png" alt="C Drive" />
+            <span>C:</span>
+          </div>
+          <div id="c-drive-content" style="display: none">
+            <div id="secret-image-icon" class="window-icon">
+              <img
+                src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png"
+                alt="Secret File"
+              />
+              <span>dontshowthis<br />toanyone.jpg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="chrome">
+        <div class="window-titlebar">
+          <span class="window-title">Chrome</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="browser-toolbar">
+            <div class="address-bar-container">
+              <input
+                type="text"
+                class="browser-address-bar"
+                placeholder="Enter a website URL..."
+                value="https://www.google.com"
+              />
+              <button class="browser-go-button">Go!</button>
+            </div>
+          </div>
+          <div class="browser-viewport">
+            <iframe
+              id="browser-frame"
+              src="https://web.archive.org/web/19990428171538/http://google.com/"
+              width="100%"
+              height="100%"
+            ></iframe>
+            <div class="browser-loading">
+              Generating website...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="notepad">
+        <div class="window-titlebar">
+          <span class="window-title">MFSNotes</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="notepad-menu">
+            <button class="notepad-story-button">Generate Story</button>
+          </div>
+          <textarea
+            class="notepad-textarea"
+            style="
+              width: 100%;
+              height: calc(100% - 30px);
+              border: none;
+              outline: none;
+              resize: none;
+              background-color: white;
+              border: 1px solid #808080;
+            "
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="window resizable" id="paint">
+        <div class="window-titlebar">
+          <span class="window-title">MFSPaint</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div
+          class="window-content"
+          style="
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+            background-color: #c0c0c0;
+          "
+        >
+          <div class="paint-toolbar">
+            <div class="paint-colors">
+              <button
+                class="paint-color-swatch"
+                data-color="black"
+                style="background-color: black"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="red"
+                style="background-color: red"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="blue"
+                style="background-color: blue"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="green"
+                style="background-color: green"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="yellow"
+                style="background-color: yellow"
+              ></button>
+              <button class="paint-color-swatch" data-color="white" style="background-color: white">
+                E
+              </button>
+            </div>
+            <div class="paint-brush-sizes">
+              <button class="paint-size-button" data-size="2">S</button>
+              <button class="paint-size-button" data-size="5">M</button>
+              <button class="paint-size-button" data-size="10">L</button>
+            </div>
+            <button class="paint-clear-button">Clear</button>
+          </div>
+          <canvas
+            id="paint-canvas"
+            style="flex-grow: 1; background-color: white; cursor: crosshair; display: block"
+          ></canvas>
+        </div>
+      </div>
+
+      <div class="window resizable" id="doom">
+        <div class="window-titlebar">
+          <span class="window-title">Doom II</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content" id="doom-content">
+        </div>
+      </div>
+
+      <div class="window resizable" id="gemini">
+        <div class="window-titlebar">
+          <span class="window-title">MFS App</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content gemini-chat-content">
+          <div class="gemini-chat-history">
+          </div>
+          <div class="gemini-chat-input-area">
+            <input type="text" class="gemini-chat-input" placeholder="Type your message..." />
+            <button class="gemini-chat-send">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="subwaysurfer" style="width: 400px; height: 500px">
+        <div class="window-titlebar">
+          <span class="window-title">MFSSurfer</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content" style="padding:0; display:flex; flex-direction:column; background: #000; overflow: hidden;">
+          <canvas id="subwaysurfer-canvas" style="flex:1; width:100%; height:100%; touch-action: none; display: block;"></canvas>
+          <div id="subwaysurfer-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; background: rgba(0,0,0,0.6); color: #fff; font-family:'Courier New', sans-serif; flex-direction: column;">
+            <h2 style="margin:0; color:#0f0;">GEMSURFER</h2>
+            <p style="text-align:center; margin:10px 0;">Tap / Click to Jump<br/>Dodge the obstacles!</p>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button id="subwaysurfer-startBtn" style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background: #ff66b2; color: #fff; border: 2px solid #fff;">Start Game</button>
+                <button id="subwaysurfer-aiBtn" style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background: #000; color: #0ff; border: 2px solid #0ff;">✨ Use AI Graphics ✨</button>
+            </div>
+          </div>
+          <div id="subwaysurfer-score" style="position: absolute; top: 30px; left: 10px; color: #fff; font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2rem; text-shadow: 2px 2px 0 #000; pointer-events: none;">Score: 0</div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="instagram" style="width: 380px; height: 600px">
+        <div class="window-titlebar">
+          <span class="window-title">Instagram (2012) ✨</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content instagram-content" style="padding:0; display:flex; flex-direction:column; background: #e5e5e5; position: relative;">
+          
+          <!-- Header -->
+          <div id="insta-header" style="background: linear-gradient(to bottom, #517fa4, #306088); border-bottom: 1px solid #1c3c5a; color: white; height: 44px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.5); z-index: 10; position: relative;">
+             <button id="insta-refresh-btn" style="position: absolute; left: 10px; background: none; border: none; font-size: 20px; color: white; cursor: pointer; display: none;">↻</button>
+             <span id="insta-header-title" style="font-family: 'Billabong', 'Georgia', serif; font-style: italic; font-size: 26px; text-shadow: 0 -1px 1px rgba(0,0,0,0.5);">Instagram</span>
+          </div>
+
+          <!-- Feed (Home) Tab -->
+          <div id="insta-tab-home" class="insta-tab" style="flex: 1; overflow-y: auto; padding-bottom: 50px; background: #edeeee; display: block;">
+             
+             <!-- Stories Tray -->
+             <div id="instagram-stories" style="display: flex; gap: 15px; padding: 12px 15px; background: white; border-bottom: 1px solid #d3d3d3; overflow-x: auto; white-space: nowrap;">
+                 <!-- Stories injected here -->
+             </div>
+
+             <div id="instagram-feed"></div>
+          </div>
+
+          <!-- Story View Modal -->
+          <div id="insta-story-modal" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #111; z-index: 30; display: none; flex-direction: column;">
+             <div style="height: 4px; display: flex; gap: 2px; padding: 10px 10px 0 10px; z-index: 31;">
+                 <div style="flex: 1; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
+                     <div id="insta-story-progress" style="width: 0%; height: 100%; background: white;"></div>
+                 </div>
+             </div>
+             <div style="display: flex; align-items: center; padding: 10px; z-index: 31; color: white;">
+                 <img id="insta-story-avatar" src="" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid white; margin-right: 10px; background: #ccc;">
+                 <span id="insta-story-user" style="font-weight: bold; font-family: Arial, sans-serif; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">user</span>
+                 <span id="insta-story-time" style="color: #ddd; font-size: 12px; margin-left: 10px; font-family: Arial, sans-serif; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">2h</span>
+                 <button id="insta-story-close" style="margin-left: auto; background: none; border: none; color: white; font-size: 24px; cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">✕</button>
+             </div>
+             <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: -50px;">
+                 <img id="insta-story-img" src="" style="width: 100%; height: 100%; object-fit: contain;">
+             </div>
+             <!-- Next / Prev Click Areas overlay -->
+             <div style="position: absolute; top: 60px; bottom: 0; left: 0; width: 30%; z-index: 32; cursor: pointer; display: none;" id="insta-story-prev"></div>
+             <div style="position: absolute; top: 60px; bottom: 0; right: 0; width: 70%; z-index: 32; cursor: pointer; display: none;" id="insta-story-next"></div>
+          </div>
+
+          <!-- Popular Tab -->
+          <div id="insta-tab-popular" class="insta-tab" style="flex: 1; overflow-y: auto; padding-bottom: 50px; background: #edeeee; display: none;">
+             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px;" id="insta-popular-grid">
+               <!-- Grid items here -->
+             </div>
+          </div>
+
+          <!-- Reels Tab -->
+          <div id="insta-tab-reels" class="insta-tab" style="flex: 1; display: none; background: #000; position: relative;">
+             <div id="instagram-reels-container" style="width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory;">
+                 <!-- Reels injected here -->
+             </div>
+          </div>
+
+          <!-- Camera Tab -->
+          <div id="insta-tab-camera" class="insta-tab" style="flex: 1; display: none; flex-direction: column; background: #222;">
+              <div style="flex: 1; background: #000; display: flex; justify-content: center; align-items: center; position: relative;">
+                  <div style="color: #fff; text-align: center; font-family: sans-serif;">
+                      <div style="font-size: 40px; margin-bottom: 10px;">📷</div>
+                      <div>Camera Viewfinder</div>
+                      <div style="font-size: 12px; color: #aaa; margin-top: 10px;">(Simulated via AI)</div>
+                  </div>
+              </div>
+              <div style="height: 100px; background: #333; display: flex; align-items: center; justify-content: center; border-top: 2px solid #111;">
+                  <button id="insta-capture-btn" style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(to bottom, #ddd, #aaa); border: 4px solid #555; box-shadow: 0 2px 4px rgba(0,0,0,0.5); cursor: pointer;"></button>
+              </div>
+          </div>
+
+          <!-- News Tab -->
+          <div id="insta-tab-news" class="insta-tab" style="flex: 1; overflow-y: auto; padding-bottom: 50px; background: white; display: none;">
+             <div style="padding: 10px; border-bottom: 1px solid #ddd; display: flex; align-items: center;">
+                <div style="width: 35px; height: 35px; border-radius: 3px; background: #ccc; margin-right: 10px; background-image: url('https://win98icons.alexmeub.com/icons/png/user_world-0.png'); background-size: cover;"></div>
+                <div style="font-family: Arial, sans-serif; font-size: 13px;">
+                    <span style="font-weight: bold; color: #125688;">kevin</span> liked your photo. <span style="color: #999;">5m</span>
+                </div>
+                <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&w=40&q=80" style="margin-left: auto; width: 35px; height: 35px;">
+             </div>
+             <div style="padding: 10px; border-bottom: 1px solid #ddd; display: flex; align-items: center;">
+                <div style="width: 35px; height: 35px; border-radius: 3px; background: #ccc; margin-right: 10px; background-image: url('https://win98icons.alexmeub.com/icons/png/user_computer-0.png'); background-size: cover;"></div>
+                <div style="font-family: Arial, sans-serif; font-size: 13px;">
+                    <span style="font-weight: bold; color: #125688;">syst3m</span> started following you. <span style="color: #999;">1h</span>
+                </div>
+                <button style="margin-left: auto; background: linear-gradient(to bottom, #fff, #eee); border: 1px solid #ccc; border-radius: 3px; padding: 4px 8px; font-weight: bold; color: #333; font-size: 12px; cursor: pointer;">Following</button>
+             </div>
+          </div>
+
+          <!-- Profile Tab -->
+          <div id="insta-tab-profile" class="insta-tab" style="flex: 1; overflow-y: auto; padding-bottom: 50px; background: #edeeee; display: none;">
+             <div style="background: white; padding: 15px; border-bottom: 1px solid #ddd; display: flex; align-items: center;">
+                 <img src="https://win98icons.alexmeub.com/icons/png/msie1-0.png" style="width: 70px; height: 70px; border-radius: 5px; border: 1px solid #ccc; margin-right: 20px;">
+                 <div style="flex: 1; display: flex; justify-content: space-between; text-align: center; font-family: Arial, sans-serif;">
+                     <div><div style="font-weight: bold; font-size: 16px;">1</div><div style="color: #999; font-size: 11px;">photos</div></div>
+                     <div><div style="font-weight: bold; font-size: 16px;">124</div><div style="color: #999; font-size: 11px;">followers</div></div>
+                     <div><div style="font-weight: bold; font-size: 16px;">42</div><div style="color: #999; font-size: 11px;">following</div></div>
+                 </div>
+             </div>
+             <div style="padding: 10px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: center;">
+                 <button style="width: 100%; background: linear-gradient(to bottom, #fff, #efefef); border: 1px solid #ccc; border-radius: 4px; padding: 6px; font-weight: bold; color: #333; cursor: pointer; text-shadow: 0 1px 0 rgba(255,255,255,0.8);">Edit Your Profile</button>
+             </div>
+             <div style="display: flex; background: #f9f9f9; border-bottom: 1px solid #ddd; height: 40px;">
+                 <button style="flex: 1; background: #fff; border: none; border-right: 1px solid #ddd; font-size: 20px; color: #3f729b; cursor: pointer; box-shadow: inset 0 -3px 0 #3f729b;">▦</button>
+                 <button style="flex: 1; background: none; border: none; border-right: 1px solid #ddd; font-size: 20px; color: #aaa; cursor: pointer;">≣</button>
+                 <button style="flex: 1; background: none; border: none; font-size: 20px; color: #aaa; cursor: pointer;">📌</button>
+             </div>
+             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 2px;" id="insta-profile-grid">
+               <!-- Grid items -->
+             </div>
+          </div>
+
+          <!-- Bottom Nav bar -->
+          <div id="insta-bot-nav" style="position: absolute; bottom: 0; left: 0; right: 0; height: 48px; background: #222; border-top: 1px solid #111; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; box-shadow: 0 -1px 3px rgba(0,0,0,0.5); z-index: 10;">
+              <button data-tab="home" class="insta-nav-btn active" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; text-shadow: 0 0 5px rgba(255,255,255,0.5);">🏠</button>
+              <button data-tab="popular" class="insta-nav-btn" style="background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer;">🌟</button>
+              <button data-tab="camera" class="insta-nav-btn" style="background: linear-gradient(to bottom, #5086b2, #396489); border: 2px solid #20415e; border-radius: 5px; color: white; width: 44px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);">📷</button>
+              <button data-tab="reels" class="insta-nav-btn" style="background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer;">🎬</button>
+              <button data-tab="news" class="insta-nav-btn" style="background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer;">❤️</button>
+              <button data-tab="profile" class="insta-nav-btn" style="background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer;">👤</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="window resizable" id="imageViewer" style="width: 350px; height: 300px">
+        <div class="window-titlebar">
+          <span class="window-title" id="image-viewer-title">Image Viewer</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div
+          class="window-content image-viewer-content"
+          style="
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #808080;
+          "
+        >
+          <img
+            id="image-viewer-img"
+            src=""
+            alt="Image"
+            style="max-width: 100%; max-height: 100%; object-fit: contain"
+          />
+        </div>
+      </div>
+
+      <div class="window resizable" id="mediaPlayer" style="width: 520px; height: 500px;">
+        <div class="window-titlebar">
+          <span class="window-title">MFSPlayer</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content media-player-content">
+          <div class="media-player-url-bar">
+            <input type="text" class="media-player-input" placeholder="Enter YouTube Video URL or ID" />
+            <button class="media-player-load-button">Load</button>
+          </div>
+          <div class="media-player-video-container">
+            <div id="youtube-player-mediaPlayer">
+                 <p class="media-player-status-message">Loading MFSPlayer...</p>
+            </div>
+          </div>
+          <div class="media-player-controls-panel">
+            <div class="media-player-buttons-group">
+                <button class="media-player-control-button" id="media-player-play" title="Play">▶</button>
+                <button class="media-player-control-button" id="media-player-pause" title="Pause">❚❚</button>
+                <button class="media-player-control-button" id="media-player-stop" title="Stop">■</button>
+            </div>
+            <div class="media-player-progress-bar-container-placeholder">
+                <div class="media-player-progress-bar-placeholder"></div>
+            </div>
+            <div class="media-player-volume-placeholder">
+                <span>🔊</span>
+                <div class="media-player-volume-slider-placeholder"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MP3 Player Window -->
+      <div class="window resizable" id="mp3Player" style="width: 320px; height: 420px; display: none;">
+        <div class="window-titlebar">
+          <span class="window-title">CD Player</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content mp3-player-content">
+          <div class="cd-drive-container">
+            <div class="cd-visual">
+              <div class="cd-disc" id="cd-disc"></div>
+              <div class="cd-hole"></div>
+            </div>
+          </div>
+          <div class="mp3-display">
+            <div class="mp3-track-info" id="mp3-track-info">NO DISC</div>
+            <div class="mp3-time" id="mp3-time">00:00</div>
+          </div>
+          <div class="mp3-controls">
+            <button class="mp3-btn" id="mp3-prev">⏮</button>
+            <button class="mp3-btn" id="mp3-play">▶</button>
+            <button class="mp3-btn" id="mp3-pause">⏸</button>
+            <button class="mp3-btn" id="mp3-stop">⏹</button>
+            <button class="mp3-btn" id="mp3-next">⏭</button>
+          </div>
+          <div class="mp3-tracks">
+            <div class="mp3-track-list" id="mp3-track-list">
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e8/9f/e3/e89fe360-6090-7678-0960-cb0b026c19ad/mzaf_9495917859370982012.plus.aac.p.m4a">ENHYPEN - Bite Me</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/03/67/e1/0367e19c-00be-22c0-77e0-50395fa347fa/mzaf_5914760408694089352.plus.aac.p.m4a">ENHYPEN - XO (Only If You Say Yes)</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/15/9f/61/159f61b2-1253-9555-f81d-065d31930507/mzaf_3733756114863038963.plus.aac.p.m4a">ENHYPEN - No Doubt</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/9c/d1/e3/9cd1e37e-601f-1dca-1857-5aff75b5b9c6/mzaf_14516028607465397834.plus.aac.p.m4a">ENHYPEN - Drunk-Dazed</div>
+              
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8c/37/20/8c372047-2727-8054-9411-0e4867643dd8/mzaf_10169659262182214119.plus.aac.p.m4a">The Neighbourhood - Sweater Weather</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/1b/08/9e/1b089e17-1084-d825-d576-66d46ae1e243/mzaf_11823295334220528749.plus.aac.p.m4a">The Neighbourhood - Softcore</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9c/c7/44/9cc74428-f54c-1235-90d6-28ab5b757281/mzaf_7973766608452629332.plus.aac.p.m4a">The Neighbourhood - Daddy Issues</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a2/ef/23/a2ef23f1-c1c9-beea-405c-c7090446f869/mzaf_13397780695955177862.plus.aac.p.m4a">The Neighbourhood - Reflections</div>
+
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/de/c3/e8/dec3e884-7237-9622-718a-12c5f48c5ca2/mzaf_3134455671785145822.plus.aac.p.m4a">Billie Eilish - WILDFLOWER</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/34/31/d3/3431d34e-847f-5d66-df83-0bce688d997e/mzaf_18106743962423782018.plus.aac.p.m4a">Billie Eilish - BIRDS OF A FEATHER</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d6/59/2b/d6592b0b-1e7e-4743-b2e4-f2af038fd783/mzaf_7697277787797935735.plus.aac.p.m4a">Billie Eilish - ocean eyes</div>
+              <div class="mp3-track-item" data-src="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c3/87/1f/c3871f7e-3260-d615-1c66-5fdca2c3a48f/mzaf_10721331211699880949.plus.aac.p.m4a">Billie Eilish - bad guy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start Menu -->
+      <div class="start-menu" id="start-menu">
+        <div class="start-menu-item" data-app="myComputer">My MFStop</div>
+        <div class="start-menu-item" data-app="chrome">Chrome</div>
+        <div class="start-menu-item" data-app="notepad">MFSNotes</div>
+        <div class="start-menu-item" data-app="paint">MFSPaint</div>
+        <div class="start-menu-item" data-app="doom">Doom II</div>
+        <div class="start-menu-item" data-app="subwaysurfer">MFSSurfer</div>
+        <div class="start-menu-item" data-app="gemini">MFS App</div>
+        <div class="start-menu-item" data-app="instagram">InstaMFS</div>
+        <div class="start-menu-item" data-app="mediaPlayer">MFSPlayer</div>
+        <div class="start-menu-item" data-app="mp3Player">CD Player</div>
+      </div>
+
+      <!-- Taskbar -->
+      <div id="taskbar">
+        <button id="start-button">
+          <img
+            src="https://storage.googleapis.com/gemini-95-icons/start-gemini.png"
+            alt="Start"
+            style="width: 80px; height: 70px"
+          />
+        </button>
+        <div id="taskbar-apps">
+        </div>
+      </div>
+
+      <div id="paint-assistant">
+        <div class="assistant-bubble">Thinking...</div>
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/robot-assistant.gif"
+          alt="Paint Assistant"
+          class="assistant-image"
+        />
+      </div>
+    </div>
+  <script type="module" src="/index.ts"></script>
+</body>
+</html>
