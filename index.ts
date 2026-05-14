@@ -107,7 +107,7 @@ async function openApp(appName: string): Promise<void> {
             case 'paint': iconSrc = 'https://storage.googleapis.com/gemini-95-icons/gempaint.png'; title = 'MFSPaint'; break;
             case 'doom': iconSrc = 'https://64.media.tumblr.com/1d89dfa76381e5c14210a2149c83790d/7a15f84c681c1cf9-c1/s540x810/86985984be99d5591e0cbc0dea6f05ffa3136dac.png'; title = 'Doom II'; break;
             case 'subwaysurfer': iconSrc = 'https://win98icons.alexmeub.com/icons/png/joystick-0.png'; title = 'MFSSurfer'; break;
-            case 'gemini': iconSrc = 'https://storage.googleapis.com/gemini-95-icons/GeminiChatRetro.png'; title = 'MFS App'; break;
+            case 'calculator': iconSrc = 'https://win98icons.alexmeub.com/icons/png/calculator-1.png'; title = 'Calculator'; break;
             case 'instagram': iconSrc = 'https://win98icons.alexmeub.com/icons/png/camera-2.png'; title = 'InstaMFS'; break;
             case 'imageViewer': iconSrc = 'https://win98icons.alexmeub.com/icons/png/display_properties-4.png'; title = 'Image Viewer'; break;
             case 'mediaPlayer': iconSrc = 'https://storage.googleapis.com/gemini-95-icons/ytmediaplayer.png'; title = 'MFSPlayer'; break;
@@ -157,8 +157,8 @@ async function openApp(appName: string): Promise<void> {
         }
     } else if (appName === 'subwaysurfer') {
         initSubwaySurfer(windowElement);
-    } else if (appName === 'gemini') {
-        await initGeminiChat(windowElement);
+    } else if (appName === 'calculator') {
+        initCalculator(windowElement);
     }
     else if (appName === 'instagram') {
         initInstagramApp(windowElement);
@@ -201,6 +201,15 @@ function closeApp(appName: string): void {
              paintResizeObserverMap.get(paintContent)?.disconnect();
              paintResizeObserverMap.delete(paintContent);
          }
+    }
+
+    if (appName === 'subwaysurfer') {
+        // Stop surfer BGM if it's playing
+        // @ts-ignore
+        if (typeof surferBgmPlayer !== 'undefined' && surferBgmPlayer && typeof surferBgmPlayer.pauseVideo === 'function') {
+            // @ts-ignore
+            surferBgmPlayer.pauseVideo();
+        }
     }
 
     if (appName === 'mediaPlayer') {
@@ -279,6 +288,22 @@ function minimizeApp(appName: string): void {
              bringToFront(openApps.get(nextAppToActivate)!.windowEl);
          }
     }
+}
+
+
+function initCalculator(windowElement: HTMLDivElement) {
+    const display = windowElement.querySelector('#calc-display') as HTMLInputElement;
+    const btns = windowElement.querySelectorAll('.calc-btn');
+    if(!display) return;
+    btns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            const val = (e.target as HTMLButtonElement).innerText;
+            if (val === 'C') { display.value = ''; }
+            else if (val === '=') {
+                try { display.value = eval(display.value); } catch { display.value = 'Error'; }
+            } else { display.value += val; }
+        });
+    });
 }
 
 // --- Gemini Chat Specific Functions ---
@@ -1464,35 +1489,76 @@ async function initMediaPlayer(windowElement: HTMLDivElement): Promise<void> {
 
 async function initializeGeminiIfNeeded(context: string): Promise<boolean> {
     if (geminiInstance) return true;
-    try {
-        const module = await import('@google/genai');
-        // @ts-ignore
-        const GoogleAIClass = module.GoogleGenAI;
-        if (typeof GoogleAIClass !== 'function') throw new Error("GoogleGenAI constructor not found.");
-        // @ts-ignore
-        const apiKey = process.env.GEMINI_API_KEY || "";
-        if (!apiKey) {
-            alert("CRITICAL ERROR: Gemini API Key missing.");
-            throw new Error("API Key is missing.");
+    
+    // Dummified AI instance
+    geminiInstance = {
+        chats: {
+            create: () => ({
+                sendMessageStream: async function*(msg) {
+                    yield { text: "Error: AI features removed for runtime compatibility." };
+                }
+            })
+        },
+        models: {
+            generateContentStream: async function*(args) {
+                yield { text: "Simulated text: AI is disabled." };
+            },
+            generateContent: async function(args) {
+                return {
+                    text: "Simulated text.",
+                    candidates: [{
+                        content: {
+                            parts: [
+                                { text: "<html><body><h1 style='color:green;font-family:Comic Sans MS;'>Welcome to 1996!</h1><p>Offline retro web proxy successfully loaded!</p></body></html>" },
+                                // Tiny 1x1 transparent png
+                                { inlineData: { mimeType: 'image/png', data: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' } },
+                            ]
+                        }
+                    }]
+                };
+            }
         }
-         // @ts-ignore
-        geminiInstance = new GoogleAIClass({apiKey: apiKey});
-        return true;
-    } catch (error: any) {
-        console.error(`Failed Gemini initialization in ${context}:`, error);
-        alert(`CRITICAL ERROR: Gemini AI failed to initialize. ${error.message}`);
-        return false;
-    }
+    };
+    return true;
 }
 
 let subwaySurferReq: number | null = null;
+
+let surferBgmPlayer: any = null;
+let bgmInitialized = false;
+
+async function initSurferBgmLayer() {
+    if (bgmInitialized) return;
+    try {
+        await loadYouTubeApi();
+        // @ts-ignore
+        surferBgmPlayer = new YT.Player('subwaysurfer-bgm', {
+            height: '10',
+            width: '10',
+            videoId: 'YmlePfb1a8k',
+            playerVars: {
+                'playsinline': 1,
+                'autoplay': 0,
+                'loop': 1,
+                'playlist': 'YmlePfb1a8k'
+            },
+            events: {
+                'onReady': () => { bgmInitialized = true; }
+            }
+        });
+    } catch(err) {
+        console.error("Failed to load BGM array", err);
+    }
+}
+
 function initSubwaySurfer(windowEl: HTMLDivElement) {
+    initSurferBgmLayer();
+
     const canvas = windowEl.querySelector('#subwaysurfer-canvas') as HTMLCanvasElement;
     const ctx = canvas?.getContext('2d');
     const overlay = windowEl.querySelector('#subwaysurfer-overlay') as HTMLDivElement;
     const startBtn = windowEl.querySelector('#subwaysurfer-startBtn') as HTMLButtonElement;
     const scoreEl = windowEl.querySelector('#subwaysurfer-score') as HTMLDivElement;
-    const aiBtn = windowEl.querySelector('#subwaysurfer-aiBtn') as HTMLButtonElement;
     if (!canvas || !ctx || !overlay || !startBtn || !scoreEl) return;
 
     if (subwaySurferReq) { cancelAnimationFrame(subwaySurferReq); subwaySurferReq = null; }
@@ -1502,243 +1568,256 @@ function initSubwaySurfer(windowEl: HTMLDivElement) {
     canvas.width = width;
     canvas.height = height;
 
-    let aiPlayerImg: HTMLImageElement | null = null;
-    let aiObstacleImg: HTMLImageElement | null = null;
-    let aiBgImg: HTMLImageElement | null = null;
-
-    if (aiBtn) {
-        aiBtn.onclick = async () => {
-            aiBtn.disabled = true;
-            aiBtn.textContent = 'Generating... ⏳';
-            startBtn.disabled = true;
-
-            try {
-                if (!geminiInstance) {
-                    if (!await initializeGeminiIfNeeded('initSubwaySurfer')) {
-                        aiBtn.textContent = 'Error x_x';
-                        return;
-                    }
-                }
-                
-                const promptPlayer = "A cool Y2K retro 90s character sprite riding a hoverboard, side view facing right, pure white background. NO TEXT";
-                const promptBg = "Side scrolling video game background, retro 90s vaporwave, synthwave city skyline, neon colors. NO TEXT";
-                
-                const [playerRes, bgRes] = await Promise.all([
-                    // @ts-ignore
-                    geminiInstance.models.generateContent({
-                        model: 'gemini-2.5-flash-image',
-                        contents: [{role: 'user', parts: [{text: promptPlayer}]}],
-                        config: { temperature: 0.9, responseModalities: ['IMAGE'] }
-                    }),
-                    // @ts-ignore
-                    geminiInstance.models.generateContent({
-                        model: 'gemini-2.5-flash-image',
-                        contents: [{role: 'user', parts: [{text: promptBg}]}],
-                        config: { temperature: 0.9, responseModalities: ['IMAGE'] }
-                    })
-                ]);
-                
-                const extractImage = (result: any) => {
-                    if (result.candidates?.[0]?.content) {
-                        for (const part of result.candidates[0].content.parts) {
-                            if (part.inlineData?.data) {
-                                return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
-                            }
-                        }
-                    }
-                    return null;
-                }
-                
-                const pUrl = extractImage(playerRes);
-                const bUrl = extractImage(bgRes);
-
-                if (pUrl) { aiPlayerImg = new Image(); aiPlayerImg.src = pUrl; }
-                if (bUrl) { aiBgImg = new Image(); aiBgImg.src = bUrl; }
-
-                aiBtn.style.display = 'none';
-            } catch(e) {
-                console.error("Asset generation error", e);
-                aiBtn.textContent = 'Failed. Try Again';
-            } finally {
-                aiBtn.disabled = false;
-                startBtn.disabled = false;
-                if(aiPlayerImg) reset();
-            }
-        };
-    }
-
     let playing = false;
     let score = 0;
-    let speed = 5;
+    let speed = 6;
     let frameObj = 0;
+    let gridOffset = 0;
+
+    let player = {
+        x: 50,
+        y: height - 80 - 30, // 80px floor
+        width: 30,
+        height: 30,
+        dy: 0,
+        gravity: 0.8,
+        jumpPower: -13,
+        grounded: true,
+        doubleJumped: false
+    };
+
+    let obstacles: {x: number, y: number, width: number, height: number, type: number}[] = [];
     
-    // Y2K Retro colors
-    const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff00aa', '#00ffaa'];
-    
-    const player = { x: 50, y: height - 100, width: 40, height: 60, dy: 0, gravity: 0.6, jumpPower: -13, grounded: false, doubleJumped: false };
-    const obstacles: any[] = [];
-    const particles: any[] = [];
-    const stars: any[] = Array.from({length: 50}, () => ({x: Math.random()*width, y: Math.random()*(height-100), s: Math.random()*2}));
-    
+    // Mountains
+    let mountains = [
+        {x: 0, scale: 1}, {x: 400, scale: 1.2}, {x: 800, scale: 0.8}
+    ];
+
     function reset() {
-        score = 0;
-        speed = 5;
-        frameObj = 0;
-        player.y = height - 100;
-        player.dy = 0;
-        player.doubleJumped = false;
-        obstacles.length = 0;
-        particles.length = 0;
+        if (surferBgmPlayer && typeof surferBgmPlayer.playVideo === 'function') {
+            surferBgmPlayer.playVideo();
+        }
         playing = true;
+        score = 0;
+        speed = 6;
+        frameObj = 0;
+        gridOffset = 0;
+        obstacles = [];
+        player.y = height - 80 - 30;
+        player.dy = 0;
+        scoreEl.innerText = "Score: 0";
         overlay.style.display = 'none';
-        scoreEl.innerText = `Score: ${score}`;
+        
         loop();
     }
-    
+
+    startBtn.onclick = reset;
+
     function jump() {
         if (!playing) {
-            reset();
+            if (overlay.style.display === 'flex') reset();
             return;
         }
         if (player.grounded) {
             player.dy = player.jumpPower;
             player.grounded = false;
-            player.doubleJumped = false;
-            createParticles(player.x + 20, player.y + 60, 10, '#fff');
         } else if (!player.doubleJumped) {
             player.dy = player.jumpPower * 0.8;
             player.doubleJumped = true;
-            createParticles(player.x + 20, player.y + 60, 15, '#0ff');
         }
     }
 
-    startBtn.onclick = reset;
-    canvas.onmousedown = jump;
-    canvas.ontouchstart = (e) => { e.preventDefault(); jump(); };
+    const clickHandler = (e: Event) => {
+        if (e.target === startBtn) return;
+        jump();
+    };
     
-    function createParticles(x: number, y: number, count: number, color: string) {
-        for(let i=0; i<count; i++) {
-            particles.push({
-                x, y,
-                vx: (Math.random() - 0.5) * 5,
-                vy: (Math.random() - 0.5) * 5,
-                life: 1.0,
-                color
-            });
+    // Clean up previous event listeners (we can just add it once ideally, but it's safe if we overwrite wrapper)
+    windowEl.onclick = clickHandler;
+    // For touch:
+    windowEl.ontouchstart = clickHandler;
+
+    function drawSun() {
+        if(!ctx) return;
+        let cx = width / 2;
+        let cy = height - 160;
+        let r = 120;
+        let grad = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
+        grad.addColorStop(0, '#ffdf00');
+        grad.addColorStop(1, '#ff0055');
+        
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Sun lines
+        ctx.fillStyle = '#0f0f28';
+        for(let i=0; i<8; i++) {
+            let lh = 2 + i*2;
+            let ly = cy + r - 5 - (i*15);
+            if(ly > cy - r) {
+                ctx.fillRect(cx - r - 10, ly, r*2 + 20, lh);
+            }
         }
+    }
+
+    function drawMountains() {
+        if(!ctx) return;
+        ctx.fillStyle = '#1a0033';
+        ctx.strokeStyle = '#ff00ff';
+        ctx.lineWidth = 2;
+        for (let m of mountains) {
+            ctx.beginPath();
+            ctx.moveTo(m.x - 200 * m.scale, height - 80);
+            ctx.lineTo(m.x, height - 150 - 150 * m.scale);
+            ctx.lineTo(m.x + 200 * m.scale, height - 80);
+            ctx.fill();
+            ctx.stroke();
+            
+            m.x -= speed * 0.2;
+            if (m.x < -400) {
+                m.x = width + 400 + Math.random() * 200;
+                m.scale = 0.8 + Math.random() * 0.7;
+            }
+        }
+    }
+
+    function drawGrid() {
+        if(!ctx) return;
+        const startY = height - 80;
+        ctx.fillStyle = '#0f0f28';
+        ctx.fillRect(0, startY, width, 80);
+        
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#00ffff';
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 2;
+        
+        // Horizon line
+        ctx.beginPath();
+        ctx.moveTo(0, startY);
+        ctx.lineTo(width, startY);
+        ctx.stroke();
+        
+        // Vertical perspective lines
+        let cx = width / 2;
+        for (let i = -15; i <= 15; i++) {
+            ctx.beginPath();
+            ctx.moveTo(cx + i * 30, startY);
+            ctx.lineTo(cx + i * 150, height);
+            ctx.stroke();
+        }
+        
+        // Horizontal scrolling lines
+        let numLines = 8;
+        gridOffset += speed * 0.5;
+        if(gridOffset > 20) gridOffset -= 20;
+        
+        for(let i=0; i<numLines; i++) {
+            let factor = ((i * 20 + gridOffset) * (i + 1) * 0.08); 
+            let y = startY + factor;
+            if (y > height) continue;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            ctx.stroke();
+        }
+        
+        ctx.shadowBlur = 0;
     }
 
     function drawPlayer() {
-        if (!ctx) return;
-        if (aiPlayerImg && aiPlayerImg.complete && aiPlayerImg.naturalWidth > 0) {
-            const prevMode = ctx.globalCompositeOperation;
-            ctx.globalCompositeOperation = 'multiply';
-            // maintain aspect ratio approximately, character shouldn't stretch too much
-            ctx.drawImage(aiPlayerImg, player.x - 20, player.y - 20, player.width + 40, player.height + 40);
-            ctx.globalCompositeOperation = prevMode;
-            return;
+        if(!ctx) return;
+        ctx.save();
+        ctx.translate(player.x + player.width/2, player.y + player.height/2);
+        
+        // Rotate if jumping
+        if(!player.grounded) {
+             ctx.rotate(player.dy * 0.05);
         }
-
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#ff66b2';
-        ctx.fillStyle = '#ff66b2'; 
         
-        // draw hoverboard
-        ctx.fillRect(player.x - 5, player.y + player.height - 5, player.width + 10, 10);
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#0ff';
         
+        // Cyber biker
+        ctx.strokeStyle = '#0ff';
+        ctx.lineWidth = 3;
+        ctx.fillStyle = '#111';
+        
+        // Bike body
+        ctx.beginPath();
+        ctx.moveTo(-20, 5);
+        ctx.lineTo(15, -5);
+        ctx.lineTo(20, 10);
+        ctx.lineTo(-15, 15);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // Wheels
+        ctx.beginPath();
+        ctx.arc(-10, 20, 8, 0, Math.PI*2);
+        ctx.arc(15, 20, 8, 0, Math.PI*2);
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.strokeStyle = '#f0f';
+        ctx.stroke();
+        
+        // Rider
+        ctx.fillStyle = '#f0f';
+        ctx.fillRect(-5, -20, 12, 18);
         ctx.fillStyle = '#fff';
         ctx.shadowColor = '#fff';
-        ctx.fillRect(player.x, player.y, player.width, player.height - 10);
+        ctx.fillRect(2, -28, 10, 10); // Head leaning forward
         
-        // cool visor
-        ctx.fillStyle = '#0ff';
-        ctx.shadowColor = '#0ff';
-        ctx.fillRect(player.x + 15, player.y + 10, 25, 10);
-        ctx.shadowBlur = 0;
-    }
-    
-    function drawObstacles() {
-        if (!ctx) return;
-        for (const obs of obstacles) {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = obs.color;
-            ctx.fillStyle = obs.color;
-            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-            
-            // Inner core
-            ctx.fillStyle = '#fff';
-            ctx.shadowBlur = 0;
-            ctx.fillRect(obs.x + 5, obs.y + 5, obs.width - 10, obs.height - 10);
-        }
-    }
-    
-    function drawDecorations() {
-        if (!ctx) return;
-        
-        if (aiBgImg && aiBgImg.complete && aiBgImg.naturalWidth > 0) {
-            ctx.globalAlpha = 0.5;
-            ctx.drawImage(aiBgImg, 0, 0, width, height);
-            ctx.globalAlpha = 1.0;
-        }
-
-        // Parallax Stars
-        ctx.fillStyle = '#fff';
-        for(let s of stars) {
-            s.x -= speed * 0.1;
-            if(s.x < 0) s.x = width;
+        // Thruster
+        ctx.shadowColor = '#ffcf00';
+        ctx.fillStyle = '#ffcf00';
+        if(Math.random() > 0.2) {
             ctx.beginPath();
-            ctx.arc(s.x, s.y, s.s, 0, Math.PI*2);
+            ctx.moveTo(-20, 10);
+            ctx.lineTo(-35 - Math.random() * 15, 12);
+            ctx.lineTo(-20, 15);
             ctx.fill();
         }
 
-        // Sun
-        ctx.shadowBlur = 30;
-        ctx.shadowColor = '#ff00ff';
-        ctx.fillStyle = '#ff00aa';
-        ctx.beginPath();
-        ctx.arc(width/2, height - 100, 80, 0, Math.PI*2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        
-        // Grid floor
-        ctx.strokeStyle = '#0ff';
-        ctx.lineWidth = 1;
-        const gridOffset = (score * speed * 0.5) % 40;
-        
-        // Perspective lines
-        for (let i = -width; i < width*2; i += 40) {
-            ctx.beginPath();
-            ctx.moveTo(i - gridOffset, height - 40);
-            const centerDist = (i - gridOffset) - width/2;
-            ctx.lineTo(width/2 + centerDist * 3, height);
-            ctx.stroke();
-        }
-        
-        // Horizontal lines
-        for(let j = 0; j < 40; j+=10) {
-            ctx.beginPath();
-            ctx.moveTo(0, height - 40 + j);
-            ctx.lineTo(width, height - 40 + j);
-            ctx.stroke();
-        }
+        ctx.restore();
     }
-    
-    function updateAndDrawParticles() {
-        if (!ctx) return;
-        for(let i=particles.length-1; i>=0; i--) {
-            let p = particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life -= 0.05;
-            if (p.life <= 0) {
-                particles.splice(i, 1);
-                continue;
+
+    function drawObstacles() {
+        if(!ctx) return;
+        ctx.shadowBlur = 15;
+        for(let o of obstacles) {
+            if(o.type === 0) {
+               ctx.shadowColor = '#ff0055';
+               ctx.fillStyle = '#ff0055';
+               ctx.beginPath();
+               ctx.moveTo(o.x + o.width/2, o.y);
+               ctx.lineTo(o.x + o.width, o.y + o.height);
+               ctx.lineTo(o.x, o.y + o.height);
+               ctx.closePath();
+               ctx.fill();
+               // Inner glow
+               ctx.fillStyle = '#fff';
+               ctx.beginPath();
+               ctx.moveTo(o.x + o.width/2, o.y + o.height/3);
+               ctx.lineTo(o.x + o.width - 5, o.y + o.height - 5);
+               ctx.lineTo(o.x + 5, o.y + o.height - 5);
+               ctx.closePath();
+               ctx.fill();
+            } else {
+               ctx.shadowColor = '#00ffcc';
+               ctx.fillStyle = 'rgba(0, 255, 204, 0.4)';
+               ctx.strokeStyle = '#00ffcc';
+               ctx.lineWidth = 3;
+               ctx.fillRect(o.x, o.y, o.width, o.height);
+               ctx.strokeRect(o.x, o.y, o.width, o.height);
+               ctx.fillStyle = '#fff';
+               ctx.fillRect(o.x + 5, o.y + 5, o.width - 10, o.height - 10);
             }
-            ctx.globalAlpha = p.life;
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, 4, 4);
         }
-        ctx.globalAlpha = 1.0;
+        ctx.shadowBlur = 0;
     }
 
     function loop() {
@@ -1749,50 +1828,36 @@ function initSubwaySurfer(windowEl: HTMLDivElement) {
         height = canvas.clientHeight;
         if (canvas.width !== width) canvas.width = width;
         if (canvas.height !== height) canvas.height = height;
-        
-        // create trailing effect
-        ctx.fillStyle = 'rgba(0, 0, 10, 0.4)';
+
+        // Sky
+        let grad = ctx.createLinearGradient(0, 0, 0, height - 80);
+        grad.addColorStop(0, '#0F0F28');
+        grad.addColorStop(0.6, '#4B0082');
+        grad.addColorStop(1, '#FF007F');
+        ctx.fillStyle = grad;
         ctx.fillRect(0, 0, width, height);
         
-        ctx.fillStyle = '#111';
-        ctx.fillRect(0, height - 40, width, 40);
-        
-        drawDecorations();
-        
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = '#0ff';
-        ctx.strokeStyle = '#0ff';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(0, height - 40);
-        ctx.lineTo(width, height - 40);
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-        
+        drawSun();
+        drawMountains();
+        drawGrid();
+
         // Player physics
         player.dy += player.gravity;
         player.y += player.dy;
-        if (player.y + player.height > height - 40) {
-            player.y = height - 40 - player.height;
+        if (player.y + player.height > height - 80 - 15) { // 15px wheel offset
+            player.y = height - 80 - 15 - player.height;
             player.dy = 0;
             player.grounded = true;
             player.doubleJumped = false;
         }
 
-        // Particle trail from hoverboard
-        if (player.grounded && Math.random() > 0.5) {
-            createParticles(player.x + 5, player.y + player.height, 1, '#ff66b2');
-        }
-        
-        updateAndDrawParticles();
-        
         // Spawn obstacles
         frameObj++;
-        if (frameObj % Math.max(30, Math.floor(120 - speed * 5)) === 0) {
-            let ow = 30 + Math.random() * 20;
-            let oh = 40 + Math.random() * 50;
-            let c = colors[Math.floor(Math.random() * colors.length)];
-            obstacles.push({ x: width, y: height - 40 - oh, width: ow, height: oh, color: c });
+        if (frameObj % Math.max(30, Math.floor(120 - speed * 4)) === 0) {
+            let type = Math.random() > 0.5 ? 0 : 1;
+            let ow = type === 0 ? 30 : 50;
+            let oh = type === 0 ? 55 : 40;
+            obstacles.push({ x: width, y: height - 80 - oh, width: ow, height: oh, type });
         }
         
         // Move obstacles and collision
@@ -1800,19 +1865,27 @@ function initSubwaySurfer(windowEl: HTMLDivElement) {
             let o = obstacles[i];
             o.x -= speed;
             
-            // Collision logic
-            if (player.x < o.x + o.width && 
-                player.x + player.width > o.x && 
-                player.y < o.y + o.height && 
-                player.y + player.height > o.y) {
+            // hitbox tuning
+            let hbx = player.x;
+            let hby = player.y;
+            let hbw = player.width + 10;
+            let hbh = player.height + 15;
+
+            if (hbx < o.x + o.width && 
+                hbx + hbw > o.x && 
+                hby < o.y + o.height && 
+                hby + hbh > o.y) {
                     
                     // CRASH!
-                    createParticles(player.x + 20, player.y + 30, 50, '#ff0000');
-                    updateAndDrawParticles();
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                    ctx.fillRect(0, 0, width, height);
 
                     playing = false;
+                    if (surferBgmPlayer && typeof surferBgmPlayer.pauseVideo === 'function') {
+                        surferBgmPlayer.pauseVideo();
+                    }
                     const msg = overlay.querySelector('p');
-                    if(msg) msg.innerHTML = `<span style="color:#f0f; font-size:1.5em; font-weight:bold; text-shadow: 2px 2px #0ff;">GAME OVER</span><br/><br/>Score: ${Math.floor(score)}<br/>Speed: ${speed.toFixed(1)}<br/><br/>Tap to Retry`;
+                    if(msg) msg.innerHTML = `<span style="color:#0ff; font-size:1.5em; font-weight:bold; text-shadow: 2px 2px #f0f;">CRASHED!</span><br/><br/>Score: ${Math.floor(score)}<br/>Speed: ${speed.toFixed(1)}<br/><br/>Tap to Retry`;
                     overlay.style.display = 'flex';
                     subwaySurferReq = requestAnimationFrame(() => {}); // Pause
                     return;
@@ -1827,8 +1900,8 @@ function initSubwaySurfer(windowEl: HTMLDivElement) {
             if (score % 50 === 0) speed += 0.5; // increase speed
         }
         
-        drawPlayer();
         drawObstacles();
+        drawPlayer();
         
         subwaySurferReq = requestAnimationFrame(loop);
     }

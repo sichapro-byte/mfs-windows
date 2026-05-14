@@ -13,7 +13,6 @@
     <script type="importmap">
       {
         "imports": {
-          "@google/genai": "https://esm.sh/@google/genai@0.7.0",
           "@tailwindcss/browser": "https://esm.sh/@tailwindcss/browser@^4.1.3"
         }
       }
@@ -50,12 +49,12 @@
         />
         <span>Doom II</span>
       </div>
-      <div class="icon" data-app="gemini">
+      <div class="icon" data-app="calculator">
         <img
-          src="https://storage.googleapis.com/gemini-95-icons/GeminiChatRetro.png"
-          alt="MFS App"
+          src="https://win98icons.alexmeub.com/icons/png/calculator-1.png"
+          alt="Calculator"
         />
-        <span>MFS App</span>
+        <span>Calculator</span>
       </div>
       <div class="icon" data-app="instagram">
         <img
@@ -160,14 +159,11 @@
           </div>
         </div>
         <div class="window-content">
-          <div class="notepad-menu">
-            <button class="notepad-story-button">Generate Story</button>
-          </div>
           <textarea
             class="notepad-textarea"
             style="
               width: 100%;
-              height: calc(100% - 30px);
+              height: 100%;
               border: none;
               outline: none;
               resize: none;
@@ -253,20 +249,21 @@
         </div>
       </div>
 
-      <div class="window resizable" id="gemini">
+      <div class="window resizable" id="calculator">
         <div class="window-titlebar">
-          <span class="window-title">MFS App</span>
+          <span class="window-title">Calculator</span>
           <div class="window-controls">
             <div class="window-minimize window-control-button">−</div>
             <div class="window-close window-control-button">✕</div>
           </div>
         </div>
-        <div class="window-content gemini-chat-content">
-          <div class="gemini-chat-history">
-          </div>
-          <div class="gemini-chat-input-area">
-            <input type="text" class="gemini-chat-input" placeholder="Type your message..." />
-            <button class="gemini-chat-send">Send</button>
+        <div class="window-content calc-content" style="background:#c0c0c0; padding: 10px;">
+          <input type="text" id="calc-display" readonly style="width: 100%; height: 30px; text-align: right; margin-bottom: 10px; background: white; border: 2px inset #fff; border-bottom-color: #888; border-right-color: #888;">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+            <button class="calc-btn">7</button><button class="calc-btn">8</button><button class="calc-btn">9</button><button class="calc-btn">/</button>
+            <button class="calc-btn">4</button><button class="calc-btn">5</button><button class="calc-btn">6</button><button class="calc-btn">*</button>
+            <button class="calc-btn">1</button><button class="calc-btn">2</button><button class="calc-btn">3</button><button class="calc-btn">-</button>
+            <button class="calc-btn">C</button><button class="calc-btn">0</button><button class="calc-btn">=</button><button class="calc-btn">+</button>
           </div>
         </div>
       </div>
@@ -280,13 +277,13 @@
           </div>
         </div>
         <div class="window-content" style="padding:0; display:flex; flex-direction:column; background: #000; overflow: hidden;">
+          <div id="subwaysurfer-bgm" style="position: absolute; width: 1px; height: 1px; top: -100px; left: -100px; opacity: 0; pointer-events: none;"></div>
           <canvas id="subwaysurfer-canvas" style="flex:1; width:100%; height:100%; touch-action: none; display: block;"></canvas>
           <div id="subwaysurfer-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; background: rgba(0,0,0,0.6); color: #fff; font-family:'Courier New', sans-serif; flex-direction: column;">
-            <h2 style="margin:0; color:#0f0;">GEMSURFER</h2>
+            <h2 style="margin:0; color:#0ff; text-shadow: 2px 2px #f0f;">CYBER SURFER</h2>
             <p style="text-align:center; margin:10px 0;">Tap / Click to Jump<br/>Dodge the obstacles!</p>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button id="subwaysurfer-startBtn" style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background: #ff66b2; color: #fff; border: 2px solid #fff;">Start Game</button>
-                <button id="subwaysurfer-aiBtn" style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background: #000; color: #0ff; border: 2px solid #0ff;">✨ Use AI Graphics ✨</button>
             </div>
           </div>
           <div id="subwaysurfer-score" style="position: absolute; top: 30px; left: 10px; color: #fff; font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2rem; text-shadow: 2px 2px 0 #000; pointer-events: none;">Score: 0</div>
@@ -361,7 +358,6 @@
                   <div style="color: #fff; text-align: center; font-family: sans-serif;">
                       <div style="font-size: 40px; margin-bottom: 10px;">📷</div>
                       <div>Camera Viewfinder</div>
-                      <div style="font-size: 12px; color: #aaa; margin-top: 10px;">(Simulated via AI)</div>
                   </div>
               </div>
               <div style="height: 100px; background: #333; display: flex; align-items: center; justify-content: center; border-top: 2px solid #111;">
@@ -542,7 +538,7 @@
         <div class="start-menu-item" data-app="paint">MFSPaint</div>
         <div class="start-menu-item" data-app="doom">Doom II</div>
         <div class="start-menu-item" data-app="subwaysurfer">MFSSurfer</div>
-        <div class="start-menu-item" data-app="gemini">MFS App</div>
+        <div class="start-menu-item" data-app="calculator">Calculator</div>
         <div class="start-menu-item" data-app="instagram">InstaMFS</div>
         <div class="start-menu-item" data-app="mediaPlayer">MFSPlayer</div>
         <div class="start-menu-item" data-app="mp3Player">CD Player</div>
@@ -552,22 +548,13 @@
       <div id="taskbar">
         <button id="start-button">
           <img
-            src="https://storage.googleapis.com/gemini-95-icons/start-gemini.png"
+            src="https://win98icons.alexmeub.com/icons/png/windows-4.png"
             alt="Start"
             style="width: 80px; height: 70px"
           />
         </button>
         <div id="taskbar-apps">
         </div>
-      </div>
-
-      <div id="paint-assistant">
-        <div class="assistant-bubble">Thinking...</div>
-        <img
-          src="https://storage.googleapis.com/gemini-95-icons/robot-assistant.gif"
-          alt="Paint Assistant"
-          class="assistant-image"
-        />
       </div>
     </div>
   <script type="module" src="/index.ts"></script>

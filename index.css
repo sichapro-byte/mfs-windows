@@ -4,7 +4,7 @@ body {
   background-color: #008080;
   background-image: url('https://i.pinimg.com/736x/97/2a/04/972a045722e07fefea45bc01d0d93bbb.jpg'); 
   background-size: cover;
-  background-position: center 60%;
+  background-position: center 100%;
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
@@ -1238,7 +1238,7 @@ body {
 @media (max-width: 1024px) {
   body {
     background-image: url('https://i.pinimg.com/originals/52/55/9f/52559fb24f4958f88b78e7ef20ade59c.jpg');
-    background-position: center 80%;
+    background-position: center 100%;
   }
 }
 
