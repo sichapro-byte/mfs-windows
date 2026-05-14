@@ -1301,21 +1301,39 @@ async function initInstagramApp(windowElement: HTMLDivElement): Promise<void> {
 function initMyComputer(windowElement: HTMLDivElement): void {
     const cDriveIcon = windowElement.querySelector('#c-drive-icon') as HTMLDivElement;
     const cDriveContent = windowElement.querySelector('#c-drive-content') as HTMLDivElement;
-    const secretImageIcon = windowElement.querySelector('#secret-image-icon') as HTMLDivElement;
-    if (!cDriveIcon || !cDriveContent || !secretImageIcon) return;
+    const newImageIcon = windowElement.querySelector('#new-image-icon') as HTMLDivElement;
+    const anotherImageIcon = windowElement.querySelector('#another-image-icon') as HTMLDivElement;
+    if (!cDriveIcon || !cDriveContent) return;
     cDriveIcon.addEventListener('click', () => {
         cDriveIcon.style.display = 'none'; cDriveContent.style.display = 'block';
     });
-    secretImageIcon.addEventListener('click', () => {
-        const imageViewerWindow = document.getElementById('imageViewer') as HTMLDivElement | null;
-        const imageViewerImg = document.getElementById('image-viewer-img') as HTMLImageElement | null;
-        const imageViewerTitle = document.getElementById('image-viewer-title') as HTMLSpanElement | null;
-        if (!imageViewerWindow || !imageViewerImg || !imageViewerTitle) { alert("Image Viewer corrupted!"); return; }
-        imageViewerImg.src = 'https://storage.googleapis.com/gemini-95-icons/%40ammaar%2B%40olacombe.png';
-        imageViewerImg.alt = 'dontshowthistoanyone.jpg';
-        imageViewerTitle.textContent = 'dontshowthistoanyone.jpg - Image Viewer';
-        openApp('imageViewer');
-    });
+    
+    if (newImageIcon) {
+        newImageIcon.addEventListener('click', () => {
+            const imageViewerWindow = document.getElementById('imageViewer') as HTMLDivElement | null;
+            const imageViewerImg = document.getElementById('image-viewer-img') as HTMLImageElement | null;
+            const imageViewerTitle = document.getElementById('image-viewer-title') as HTMLSpanElement | null;
+            if (!imageViewerWindow || !imageViewerImg || !imageViewerTitle) { alert("Image Viewer corrupted!"); return; }
+            imageViewerImg.src = 'https://i.pinimg.com/736x/1e/85/ef/1e85ef7b435ca02f8aae37a85ef620dc.jpg';
+            imageViewerImg.alt = 'fityan.jpg';
+            imageViewerTitle.textContent = 'fityan.jpg - Image Viewer';
+            openApp('imageViewer');
+        });
+    }
+
+    if (anotherImageIcon) {
+        anotherImageIcon.addEventListener('click', () => {
+            const imageViewerWindow = document.getElementById('imageViewer') as HTMLDivElement | null;
+            const imageViewerImg = document.getElementById('image-viewer-img') as HTMLImageElement | null;
+            const imageViewerTitle = document.getElementById('image-viewer-title') as HTMLSpanElement | null;
+            if (!imageViewerWindow || !imageViewerImg || !imageViewerTitle) { alert("Image Viewer corrupted!"); return; }
+            imageViewerImg.src = 'https://i.pinimg.com/1200x/a5/0a/ec/a50aec83d6fd58881fd43a161e1f151e.jpg';
+            imageViewerImg.alt = 'image2.jpg';
+            imageViewerTitle.textContent = 'image2.jpg - Image Viewer';
+            openApp('imageViewer');
+        });
+    }
+
     cDriveIcon.style.display = 'inline-flex'; cDriveContent.style.display = 'none';
 }
 
