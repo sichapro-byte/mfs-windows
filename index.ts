@@ -1303,6 +1303,7 @@ function initMyComputer(windowElement: HTMLDivElement): void {
     const cDriveContent = windowElement.querySelector('#c-drive-content') as HTMLDivElement;
     const newImageIcon = windowElement.querySelector('#new-image-icon') as HTMLDivElement;
     const anotherImageIcon = windowElement.querySelector('#another-image-icon') as HTMLDivElement;
+    const thirdImageIcon = windowElement.querySelector('#third-image-icon') as HTMLDivElement;
     if (!cDriveIcon || !cDriveContent) return;
     cDriveIcon.addEventListener('click', () => {
         cDriveIcon.style.display = 'none'; cDriveContent.style.display = 'block';
@@ -1330,6 +1331,19 @@ function initMyComputer(windowElement: HTMLDivElement): void {
             imageViewerImg.src = 'https://i.pinimg.com/1200x/a5/0a/ec/a50aec83d6fd58881fd43a161e1f151e.jpg';
             imageViewerImg.alt = 'image2.jpg';
             imageViewerTitle.textContent = 'image2.jpg - Image Viewer';
+            openApp('imageViewer');
+        });
+    }
+
+    if (thirdImageIcon) {
+        thirdImageIcon.addEventListener('click', () => {
+            const imageViewerWindow = document.getElementById('imageViewer') as HTMLDivElement | null;
+            const imageViewerImg = document.getElementById('image-viewer-img') as HTMLImageElement | null;
+            const imageViewerTitle = document.getElementById('image-viewer-title') as HTMLSpanElement | null;
+            if (!imageViewerWindow || !imageViewerImg || !imageViewerTitle) { alert("Image Viewer corrupted!"); return; }
+            imageViewerImg.src = 'https://i.pinimg.com/736x/98/53/5a/98535aa36283cac7b9851a65a4b22694.jpg';
+            imageViewerImg.alt = 'image3.jpg';
+            imageViewerTitle.textContent = 'image3.jpg - Image Viewer';
             openApp('imageViewer');
         });
     }
